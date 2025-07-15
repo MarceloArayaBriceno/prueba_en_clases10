@@ -57,4 +57,4 @@ Esta práctica tiene como objetivo explicar los conceptos básicos de GitHub y Azu
 
 ---
 
-> Esta práctica está diseñada para facilitar la comprensión y el uso conjunto de GitHub y Azure en proyectos reales.
+> Esta práctica está diseñada para facilitar la comprensión y el uso conjunto de GitHub y Azure en proyectos reales..
