@@ -1,4 +1,6 @@
-﻿CREATE TABLE [dbo].[VisualizacionesPendientes] (
+﻿
+--autor marcelo araya
+CREATE TABLE [dbo].[VisualizacionesPendientes] (
     [IdPendiente]   UNIQUEIDENTIFIER DEFAULT (newid()) NOT NULL,
     [IdUsuario]     UNIQUEIDENTIFIER NOT NULL,
     [IdPelicula]    INT              NULL,
