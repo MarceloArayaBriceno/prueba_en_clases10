@@ -1,0 +1,55 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+
+namespace Abstracciones.Modelos.Servicios.Peliculas
+{
+        public class RespuestaPeliculas
+        {
+            
+            public int Pagina { get; set; }
+
+            
+            public List<Pelicula> Peliculas { get; set; }
+
+            
+            public int TotalPaginas { get; set; }
+
+            
+            public int TotalResultados { get; set; }
+        }
+
+        public class Pelicula
+        {
+
+
+            
+            public List<int> IdsGeneros { get; set; }
+
+            
+            public int Id { get; set; }
+
+
+        public string ImagenFondo { get; set; }
+
+
+
+
+        public string Descripcion { get; set; }
+
+            
+            public string Imagen { get; set; }
+
+           
+            public string FechaLanzamiento { get; set; }
+
+            
+            public string Titulo { get; set; }
+
+
+           
+            public double Calificacion { get; set; }
+
+        }
+    }
+

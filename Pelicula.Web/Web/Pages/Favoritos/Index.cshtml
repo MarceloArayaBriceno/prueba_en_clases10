@@ -1,0 +1,81 @@
+﻿@page
+@model Web.Pages.Favoritos.IndexModel
+@{
+    ViewData["Title"] = "Favoritos";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Mensaje"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input asp-for="IdUsuario" class="form-control" placeholder="Escribe el correo electrónico usuario" />
+        <button type="submit" class="btn btn-primary">Cargar</button>
+    </div>
+</form>
+
+@if (Model.Favoritos != null && Model.Favoritos.Count > 0)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var f in Model.Favoritos)
+            {
+                <tr>
+                    <td>@f.Titulo</td>
+                    <td>@f.Tipo</td>
+                    <td>@f.Descripcion</td>
+                    <td>@f.FechaRegistro.ToString("g")</td>
+                    <td>
+                        <!-- Opción 1: Formulario simple -->
+                        <form method="post" asp-page-handler="Eliminar" class="d-inline">
+                            <input type="hidden" asp-for="IdUsuario" />
+                            <input type="hidden" name="idFavorito" value="@f.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('¿Estás seguro de que deseas eliminar este favorito?')">
+                                Eliminar
+                            </button>
+                        </form>
+
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (!string.IsNullOrEmpty(Model.IdUsuario))
+{
+    <div class="alert alert-info">
+        <p>No se encontraron favoritos para este usuario.</p>
+    </div>
+}
+else
+{
+    <div class="alert alert-secondary">
+        <p>Ingresa un usuario para ver sus favoritos.</p>
+    </div>
+}
