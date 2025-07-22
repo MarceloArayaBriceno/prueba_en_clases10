@@ -1,0 +1,152 @@
+﻿@page
+@model Web.Pages.Peliculas.DetalleModel
+@inject Abstracciones.Interfaces.Reglas.IConfiguracion _configuracion
+
+@{
+    ViewData["Title"] = "Detalle de Película";
+}
+
+<div class="container-fluid px-4 mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <h1 class="h2 mb-4">@ViewData["Title"]</h1>
+
+            @if (Model.pelicula != null)
+            {
+                <div class="card shadow-sm">
+                    <div class="position-relative overflow-hidden">
+                        <img src="@Model.pelicula.Imagen"
+                             alt="@Model.pelicula.Titulo"
+                             class="card-img-top"
+                             style="height:400px;object-fit:cover;" />
+                        <span class="badge bg-warning text-dark
+                             position-absolute top-0 end-0 m-2">
+                            ⭐ @Model.pelicula.Calificacion
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h2 class="card-title">@Model.pelicula.Titulo</h2>
+                        <p class="text-muted mb-3">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            @Model.pelicula.FechaLanzamiento
+                        </p>
+                        <p class="card-text mb-4">@Model.pelicula.Descripcion</p>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <a class="btn btn-outline-danger w-100 btn-sm"
+                                   asp-page="./Detalle"
+                                   asp-route-id="@Model.pelicula.Id">
+                                    Favoritos
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <button type="button"
+                                        class="btn btn-outline-success w-100 btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#verDespuesModal"
+                                        data-item-id="@Model.pelicula.Id">
+                                    Ver Después
+                                </button>
+                            </div>
+                        </div>
+
+                        <a class="btn btn-secondary" asp-page="/Peliculas/Index">
+                            <i class="fas fa-arrow-left me-1"></i>Volver
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No se encontró la película seleccionada.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- ====== Modal “Ver Después” ====== -->
+<div class="modal fade" id="verDespuesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="verDespuesForm" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar a “Ver Después”</h5>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p>Vas a agregar <strong>@Model.pelicula.Titulo</strong> a tu lista.</p>
+                <div class="mb-3">
+                    <label for="usuarioId" class="form-label">Tu Id de Usuario</label>
+                    <input type="text"
+                           id="usuarioId"
+                           class="form-control"
+                           placeholder="11111111-1111-1111-1111-111111111111" />
+                </div>
+                <input type="hidden" id="itemId" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var verModal = document.getElementById('verDespuesModal');
+          verModal.addEventListener('show.bs.modal', function(e) {
+            document.getElementById('itemId').value = e.relatedTarget.getAttribute('data-item-id');
+            document.getElementById('usuarioId').value = '';
+          });
+
+          var form = document.getElementById('verDespuesForm');
+          form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const peliculaId = document.getElementById('itemId').value;
+            const userId     = document.getElementById('usuarioId').value.trim();
+            if (!userId) return alert('Introduce tu Id de usuario.');
+
+            const payload = {
+              idUsuario:  userId,
+              idPelicula: parseInt(peliculaId, 10),
+              idSerie:    null,
+              prioridad:  1
+            };
+
+
+            const url = '@_configuracion.ObtenerMetodo("ApiEndPointsVisualizacion", "InsertarVisualizacion")';
+
+            console.log("POST a:", url, payload);
+
+            try {
+              const resp = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type':'application/json' },
+                body: JSON.stringify(payload)
+              });
+              if (!resp.ok) {
+                const txt = await resp.text();
+                throw new Error(resp.status + " – " + txt);
+              }
+              bootstrap.Modal.getInstance(verModal).hide();
+              alert('¡Agregado a “Ver Después” correctamente!');
+  
+              window.location.href = '@Url.Page("/Peliculas/Index")';
+            } catch (err) {
+              alert('Error: ' + err.message);
+            }
+          });
+        });
+    </script>
+}
